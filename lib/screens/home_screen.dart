@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pilem/models/movie.dart';
+import 'package:pilem/screens/detail_screen.dart';
 import 'package:pilem/services/api_service.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -18,13 +19,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     _loadMovies();
   }
 
   Future<void> _loadMovies() async {
-    //data sudah siap, delay menampilkan tampilan
     final List<Map<String, dynamic>> allMoviesData = await _apiService
         .getAllMovies();
     final List<Map<String, dynamic>> trendingMoviesData = await _apiService
@@ -33,7 +32,6 @@ class _HomeScreenState extends State<HomeScreen> {
         .getPopularMovies();
 
     setState(() {
-      //diupdate statenya, kalau ada data baru, bisa langsung ditambhkan
       _allMovies = allMoviesData.map((e) => Movie.fromJson(e)).toList();
       _trendingMovies = trendingMoviesData
           .map((e) => Movie.fromJson(e))
@@ -44,19 +42,13 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     return Scaffold(
-      //scaffold terdiri dari appbar dan body
       appBar: AppBar(title: const Text('Pilem')),
       body: SingleChildScrollView(
-        //membungkus semua widget
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildMovieList(
-              'All Movies',
-              _allMovies,
-            ), //data list == kartu2 horizontal yg bergilir
+            _buildMovieList('All Movies', _allMovies),
             _buildMovieList('Trending Movies', _trendingMovies),
             _buildMovieList('Popular Movies', _popularMovies),
           ],
@@ -70,7 +62,6 @@ class _HomeScreenState extends State<HomeScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          //bungkus dengan padding, kolomnya
           padding: const EdgeInsets.all(8.0),
           child: Text(
             title,
@@ -78,31 +69,39 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
         SizedBox(
-          //kasih gap antar kotak
-          height:
-              200, //List View dibungkus dgn Sized Box dengan dikasih gap brp height
+          height: 200,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
-            itemCount: movies
-                .length, //menampilkan bnyk item yg ditampilin di List View
+            itemCount: movies.length,
             itemBuilder: (context, index) {
               final Movie movie = movies[index];
-              return Column(
-                children: [
-                  Image.network(
-                    'https://image.tmdb.org/t/p/w500/${movie.posterPath}',
-                    height: 150,
-                    width: 100,
-                    fit: BoxFit.cover,
+              return GestureDetector(
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => DetailScreen(movie: movie),
                   ),
-                  const SizedBox(height: 5),
-                  Text(
-                    movie.title.length > 14
-                        ? '${movie.title.substring(0, 10)}...'
-                        : movie.title,
-                    style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    children: [
+                      Image.network(
+                        'https://image.tmdb.org/t/p/w500${movie.posterPath}',
+                        height: 150,
+                        width: 100,
+                        fit: BoxFit.cover,
+                      ),
+                      const SizedBox(height: 5),
+                      Text(
+                        movie.title.length > 14
+                            ? '${movie.title.substring(0, 10)}...'
+                            : movie.title,
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ],
                   ),
-                ],
+                ),
               );
             },
           ),

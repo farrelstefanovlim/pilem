@@ -1,19 +1,21 @@
 import 'package:flutter/material.dart';
-import 'package:pilem/screens/home_screen.dart';
+import 'package:pilem/screens/main_screen.dart';
 
-void main() {
-  runApp(const MainApp());
-}
+void main() => runApp(const MyApp());
 
-class MainApp extends StatelessWidget {
-  const MainApp({super.key});
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Pilem',
-      theme: ThemeData(primarySwatch: Colors.blue),
-      home: const HomeScreen(),
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+        useMaterial3: true,
+      ),
+      home: const MainScreen(),
     );
   }
 }
